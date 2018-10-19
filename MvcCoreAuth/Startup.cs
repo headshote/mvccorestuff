@@ -68,13 +68,18 @@ namespace MvcCoreAuth
                 options.LogoutPath = $"/Identity/Account/Logout";
                 options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
             });
-
-            services.AddSingleton<IEmailSender, EmailSender>();
+            
+            services.AddSingleton<IEmailSender, EmailSender>(sender => new EmailSender(
+                Configuration["Email:SendGridUser"],
+                Configuration["Email:SendGridKey"]));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<MvcCoreAuthUser, IdentityRole>()
+            services.AddIdentity<MvcCoreAuthUser, IdentityRole>(config =>
+                {
+                    config.SignIn.RequireConfirmedEmail = true;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 

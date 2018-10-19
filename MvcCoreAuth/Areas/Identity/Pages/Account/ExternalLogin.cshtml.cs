@@ -115,7 +115,7 @@ namespace MvcCoreAuth.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new MvcCoreAuthUser { UserName = Input.Email, Email = Input.Email };
+                var user = new MvcCoreAuthUser { UserName = Input.Email, Email = Input.Email, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

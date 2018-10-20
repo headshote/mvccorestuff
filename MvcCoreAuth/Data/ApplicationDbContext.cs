@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MvcCoreAuth.Areas.Identity.Data;
+using MvcCoreAuth.Models;
 
 namespace MvcCoreAuth.Data
 {
@@ -21,5 +22,7 @@ namespace MvcCoreAuth.Data
             // For example, you can rename the ASP.NET Core Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
+
+        public DbSet<MvcCoreAuth.Models.Contact> Contact { get; set; }
     }
 }

@@ -18,6 +18,8 @@ using MvcCoreAuth.Areas.Identity.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using MvcCoreAuth.Authorization;
+using System.Net;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace MvcCoreAuth
 {
@@ -61,17 +63,6 @@ namespace MvcCoreAuth
                 options.User.RequireUniqueEmail = false;
             });
 
-            services.ConfigureApplicationCookie(options =>
-            {
-                // Cookie settings
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
-                options.SlidingExpiration = true;
-
-                options.LoginPath = $"/Identity/Account/Login";
-                options.LogoutPath = $"/Identity/Account/Logout";
-                options.AccessDeniedPath = $"/Identity/Account/AccessDenied";
-            });
-            
             services.AddSingleton<IEmailSender, EmailSender>(sender => new EmailSender(
                 Configuration["Email:SendGridUser"],
                 Configuration["Email:SendGridKey"]));
@@ -79,6 +70,7 @@ namespace MvcCoreAuth
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddIdentity<MvcCoreAuthUser, IdentityRole>(config =>
                 {
                     config.SignIn.RequireConfirmedEmail = true;
@@ -90,6 +82,19 @@ namespace MvcCoreAuth
             {
                 googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
                 googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                // Cookie settings
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                options.SlidingExpiration = true;
+
+                options.LoginPath = "/Identity/Account/Login";
+                options.LogoutPath = "/Identity/Account/Logout";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+
+                options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
             });
 
             services.AddMvc(config =>

@@ -1,4 +1,12 @@
-﻿@model MvcCoreAuth.Models.Contact
+﻿@using Microsoft.AspNetCore.Identity
+@using MvcCoreAuth
+@using MvcCoreAuth.Data
+@using MvcCoreAuth.Authorization;
+@using Microsoft.AspNetCore.Authorization
+@using MvcCoreAuth.Models
+@inject IAuthorizationService AuthorizationService
+
+@model MvcCoreAuth.Models.Contact
 
 @{
     ViewData["Title"] = "Details";
@@ -61,7 +69,37 @@
         </dd>
     </dl>
 </div>
+@if (Model.Status != ContactStatus.Approved)
+{
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model, ContactOperations.Approve)).Succeeded)
+    {
+        <form style="display:inline;" method="post">
+            <input type="hidden" name="id" value="@Model.ContactId" />
+            <input type="hidden" name="status" value="@ContactStatus.Approved" />
+            <button type="submit" class="btn btn-xs btn-success">Approve</button>
+        </form>
+    }
+}
+
+@if (Model.Status != ContactStatus.Rejected)
+{
+    @if ((await AuthorizationService.AuthorizeAsync(User, Model, ContactOperations.Reject)).Succeeded)
+    {
+        <form style="display:inline;" method="post">
+            <input type="hidden" name="id" value="@Model.ContactId" />
+            <input type="hidden" name="status" value="@ContactStatus.Rejected" />
+            <button type="submit" class="btn btn-xs btn-success">Reject</button>
+        </form>
+    }
+}
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ContactId">Edit</a> |
+    @if ((await AuthorizationService.AuthorizeAsync(
+      User, Model,
+      ContactOperations.Update)).Succeeded)
+    {
+        <a asp-action="Edit" asp-route-id="@Model.ContactId">Edit</a>
+        <text> | </text>
+    }
     <a asp-action="Index">Back to List</a>
 </div>

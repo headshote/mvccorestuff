@@ -9,6 +9,7 @@ using MvcCoreAuth.Models;
 
 namespace MvcCoreAuth.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         public IActionResult Index()

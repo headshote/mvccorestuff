@@ -15,6 +15,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using MvcCoreAuth.Authentication;
 using MvcCoreAuth.Areas.Identity.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using MvcCoreAuth.Authorization;
 
 namespace MvcCoreAuth
 {
@@ -89,13 +92,24 @@ namespace MvcCoreAuth
                 googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            services.AddMvc(config =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                                 .RequireAuthenticatedUser()
+                                 .Build();
+                config.Filters.Add(new AuthorizeFilter(policy));
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddRazorPagesOptions(options =>
                 {
                     options.AllowAreas = true;
                     options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
                     options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
                 });
+
+            // Authorization handlers.
+            services.AddScoped<IAuthorizationHandler, ContactIsOwnerAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, ContactAdministratorsAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, ContactManagerAuthorizationHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

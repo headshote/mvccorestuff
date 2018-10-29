@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MvcCoreAuth.Data;
+using MvcCoreAuth.Data.University;
 
 namespace MvcCoreAuth
 {
@@ -31,6 +32,7 @@ namespace MvcCoreAuth
                 {
                     var testUserPw = config["SeedUserPW"];
                     SeedData.Initialize(services, testUserPw).Wait();
+                    DbInitializer.Initialize(context);
                 }
                 catch (Exception ex)
                 {

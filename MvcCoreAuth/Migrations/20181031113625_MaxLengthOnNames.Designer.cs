@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcCoreAuth.Data;
 
-namespace MvcCoreAuth.Data.Migrations
+namespace MvcCoreAuth.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181031113625_MaxLengthOnNames")]
+    partial class MaxLengthOnNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,52 +219,11 @@ namespace MvcCoreAuth.Data.Migrations
 
                     b.Property<int>("Credits");
 
-                    b.Property<int>("DepartmentID");
-
-                    b.Property<string>("Title")
-                        .HasMaxLength(50);
+                    b.Property<string>("Title");
 
                     b.HasKey("CourseID");
 
-                    b.HasIndex("DepartmentID");
-
                     b.ToTable("Course");
-                });
-
-            modelBuilder.Entity("MvcCoreAuth.Models.University.CourseAssignment", b =>
-                {
-                    b.Property<int>("CourseID");
-
-                    b.Property<int>("InstructorID");
-
-                    b.HasKey("CourseID", "InstructorID");
-
-                    b.HasIndex("InstructorID");
-
-                    b.ToTable("CourseAssignment");
-                });
-
-            modelBuilder.Entity("MvcCoreAuth.Models.University.Department", b =>
-                {
-                    b.Property<int>("DepartmentID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<decimal>("Budget")
-                        .HasColumnType("money");
-
-                    b.Property<int?>("InstructorID");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(50);
-
-                    b.Property<DateTime>("StartDate");
-
-                    b.HasKey("DepartmentID");
-
-                    b.HasIndex("InstructorID");
-
-                    b.ToTable("Department");
                 });
 
             modelBuilder.Entity("MvcCoreAuth.Models.University.Enrollment", b =>
@@ -286,40 +247,6 @@ namespace MvcCoreAuth.Data.Migrations
                     b.ToTable("Enrollment");
                 });
 
-            modelBuilder.Entity("MvcCoreAuth.Models.University.Instructor", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("FirstMidName")
-                        .IsRequired()
-                        .HasColumnName("FirstName")
-                        .HasMaxLength(50);
-
-                    b.Property<DateTime>("HireDate");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Instructor");
-                });
-
-            modelBuilder.Entity("MvcCoreAuth.Models.University.OfficeAssignment", b =>
-                {
-                    b.Property<int>("InstructorID");
-
-                    b.Property<string>("Location")
-                        .HasMaxLength(50);
-
-                    b.HasKey("InstructorID");
-
-                    b.ToTable("OfficeAssignment");
-                });
-
             modelBuilder.Entity("MvcCoreAuth.Models.University.Student", b =>
                 {
                     b.Property<int>("ID")
@@ -329,12 +256,9 @@ namespace MvcCoreAuth.Data.Migrations
                     b.Property<DateTime>("EnrollmentDate");
 
                     b.Property<string>("FirstMidName")
-                        .IsRequired()
-                        .HasColumnName("FirstName")
                         .HasMaxLength(50);
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasMaxLength(50);
 
                     b.HasKey("ID");
@@ -387,34 +311,6 @@ namespace MvcCoreAuth.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("MvcCoreAuth.Models.University.Course", b =>
-                {
-                    b.HasOne("MvcCoreAuth.Models.University.Department", "Department")
-                        .WithMany("Courses")
-                        .HasForeignKey("DepartmentID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MvcCoreAuth.Models.University.CourseAssignment", b =>
-                {
-                    b.HasOne("MvcCoreAuth.Models.University.Course", "Course")
-                        .WithMany("CourseAssignments")
-                        .HasForeignKey("CourseID")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MvcCoreAuth.Models.University.Instructor", "Instructor")
-                        .WithMany("CourseAssignments")
-                        .HasForeignKey("InstructorID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MvcCoreAuth.Models.University.Department", b =>
-                {
-                    b.HasOne("MvcCoreAuth.Models.University.Instructor", "Administrator")
-                        .WithMany()
-                        .HasForeignKey("InstructorID");
-                });
-
             modelBuilder.Entity("MvcCoreAuth.Models.University.Enrollment", b =>
                 {
                     b.HasOne("MvcCoreAuth.Models.University.Course", "Course")
@@ -425,14 +321,6 @@ namespace MvcCoreAuth.Data.Migrations
                     b.HasOne("MvcCoreAuth.Models.University.Student", "Student")
                         .WithMany("Enrollments")
                         .HasForeignKey("StudentID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("MvcCoreAuth.Models.University.OfficeAssignment", b =>
-                {
-                    b.HasOne("MvcCoreAuth.Models.University.Instructor", "Instructor")
-                        .WithOne("OfficeAssignment")
-                        .HasForeignKey("MvcCoreAuth.Models.University.OfficeAssignment", "InstructorID")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

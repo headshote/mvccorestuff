@@ -34,10 +34,13 @@ namespace MvcCoreAuth.Controllers
                 return NotFound();
             }
 
+            string query = "SELECT * FROM Department WHERE DepartmentID = {0}";
             var department = await _context.Departments
-                 .AsNoTracking()
+                .FromSql(query, id)
                 .Include(d => d.Administrator)
-                .FirstOrDefaultAsync(m => m.DepartmentID == id);
+                .AsNoTracking()
+                .SingleOrDefaultAsync();
+
             if (department == null)
             {
                 return NotFound();

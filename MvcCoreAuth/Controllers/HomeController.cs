@@ -31,8 +31,7 @@ namespace MvcCoreAuth.Controllers
         public async Task<IActionResult> About()
         {
             List<EnrollmentDateGroup> groups = new List<EnrollmentDateGroup>();
-            var conn = _context.Database.GetDbConnection();
-            try
+            using (var conn = _context.Database.GetDbConnection())
             {
                 await conn.OpenAsync();
                 using (var command = conn.CreateCommand())
@@ -55,10 +54,7 @@ namespace MvcCoreAuth.Controllers
                     reader.Dispose();
                 }
             }
-            finally
-            {
-                conn.Close();
-            }
+
             return View(groups);
         }
 
